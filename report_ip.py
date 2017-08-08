@@ -25,7 +25,7 @@ def Check_NetConnection():
         try:
             socket.gethostbyname('www.baidu.com')
         except Exception, e:
-            engine.say('Network connection is not ready')
+            engine.say('Network connection is not ready yet')
             engine.runAndWait()
         else:
             engine.say('Network connection is ready')
@@ -49,21 +49,13 @@ def Speak_IpAddress(ip):
     engine.say('You IP Address is')
     engine.runAndWait()
     time.sleep(0.5)
-    engine.say(ip.split('.')[0])
-    engine.say('dot')
-    engine.runAndWait()
-    time.sleep(0.5)
-    engine.say(ip.split('.')[1])
-    engine.say('dot')
-    engine.runAndWait()
-    time.sleep(0.5)
-    engine.say(ip.split('.')[2])
-    engine.say('dot')
-    engine.runAndWait()
-    time.sleep(0.5)
-    engine.say(ip.split('.')[3])
-    engine.runAndWait()
-    time.sleep(0.5)
+
+    for i in range(4):
+        engine.say(ip.split('.')[i])
+        if (3 != i):
+            engine.say('dot')
+        engine.runAndWait()
+        time.sleep(0.5)
 
 def main():
     Check_NetConnection()
