@@ -36,7 +36,7 @@ def Check_NetConnection():
 def Get_LocalIpAddress():
     skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-    skt.connect(('8.8.8.8', 80))
+    skt.connect(('www.baidu.com', 80))
     socketIpPort = skt.getsockname()
     ip = socketIpPort[0]
     skt.close()
