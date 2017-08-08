@@ -16,18 +16,22 @@
 
 import socket
 import time
-import smtplib
+import pyttsx
 
 def Check_NetConnection():
+    engine = pyttsx.init()
+    engine.setProperty('rate', 110)
     while True:
         try:
             socket.gethostbyname('www.baidu.com')
         except Exception, e:
-            print 'Network connection is not ready'
+            engine.say('Network connection is not ready')
+            engine.runAndWait()
         else:
-            print 'Network connection is ready'
+            engine.say('Network connection is ready')
+            engine.runAndWait()
             break
-        time.sleep(1)
+        time.sleep(5)
 
 def Get_LocalIpAddress():
     skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -39,23 +43,34 @@ def Get_LocalIpAddress():
 
     return ip
 
-def Send_IpAddressEmail(ip):
-    smtp = smtplib.SMTP()
-    smtp.connect("smtp.126.com", "25")
-    smtp.login('wangge1989@126.com', '')
-    smtp.sendmail('wangge1989@126.com', \
-                  'wangge1989@126.com', \
-                  'From: wangge1989@126.com\r\n' +\
-                  'To: wangge1989@126.com\r\n' +\
-                  'Subject: Raspberry IP Address: ' +\
-                  ip +\
-                  '\r\n\r\nAs subject.')
-    print 'IP Address report Email is sent to wangge1989@126.com'
-    smtp.quit()
+def Speak_IpAddress(ip):
+    engine = pyttsx.init()
+    engine.setProperty('rate', 110)
+    engine.say('You IP Address is')
+    engine.runAndWait()
+    time.sleep(0.5)
+    engine.say(ip.split('.')[0])
+    engine.say('dot')
+    engine.runAndWait()
+    time.sleep(0.5)
+    engine.say(ip.split('.')[1])
+    engine.say('dot')
+    engine.runAndWait()
+    time.sleep(0.5)
+    engine.say(ip.split('.')[2])
+    engine.say('dot')
+    engine.runAndWait()
+    time.sleep(0.5)
+    engine.say(ip.split('.')[3])
+    engine.runAndWait()
+    time.sleep(0.5)
 
 def main():
     Check_NetConnection()
-    Send_IpAddressEmail(Get_LocalIpAddress())
+
+    for i in range(10):
+        Speak_IpAddress(Get_LocalIpAddress())
+        time.sleep(5)
 
 if __name__ == "__main__":
     main()
