@@ -1,3 +1,5 @@
+#!/usr/bin/python
+#-*-coding:utf-8-*-
 #
 # Copyright (C) 2017 Wang Ge
 #
@@ -16,20 +18,34 @@
 
 import socket
 import time
-import pyttsx
+import pygame
+import os
+from aip import AipSpeech
+
+APP_ID = ''
+API_KEY = ''
+SECRET_KEY = ''
 
 def Check_NetConnection():
-    engine = pyttsx.init()
-    engine.setProperty('rate', 110)
+    pygame.mixer.init(frequency = 16000)
+    track = pygame.mixer.music.load("voice/connect.mp3")
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy():
+        time.sleep(0.1)
+    print 'Connecting...'
+
     while True:
+
         try:
             socket.gethostbyname('www.baidu.com')
         except Exception, e:
-            engine.say('Network connection is not ready yet')
-            engine.runAndWait()
+            print 'Network connection is not ready yet'
         else:
-            engine.say('Network connection is ready')
-            engine.runAndWait()
+            print 'Network connection is ready'
+            track = pygame.mixer.music.load("voice/connected.mp3")
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                time.sleep(0.1)
             break
         time.sleep(5)
 
@@ -44,25 +60,33 @@ def Get_LocalIpAddress():
     return ip
 
 def Speak_IpAddress(ip):
-    engine = pyttsx.init()
-    engine.setProperty('rate', 110)
-    engine.say('You IP Address is')
-    engine.runAndWait()
-    time.sleep(0.5)
+    aipSpeech = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 
-    for i in range(4):
-        engine.say(ip.split('.')[i])
-        if (3 != i):
-            engine.say('dot')
-        engine.runAndWait()
-        time.sleep(0.5)
+    result  = aipSpeech.synthesis('你的IP地址是' + ip, 'zh', 1, {
+        'vol': 5,
+    })
+
+    if not isinstance(result, dict):
+        with open('voice/ip.mp3', 'wb') as f:
+            f.write(result)
+
+    print 'Your IP Address is ' + ip
+    pygame.mixer.init(frequency = 16000)
+    track = pygame.mixer.music.load("voice/ip.mp3")
+    pygame.mixer.music.play()
+
+    # pygame.mixer.music.play()
+    for i in range(6):
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            time.sleep(0.1)
+        time.sleep(10)
 
 def main():
+    if os.path.isfile('voice/ip.mp3'):
+        os.remove('voice/ip.mp3')
     Check_NetConnection()
-
-    for i in range(10):
-        Speak_IpAddress(Get_LocalIpAddress())
-        time.sleep(5)
+    Speak_IpAddress(Get_LocalIpAddress())
 
 if __name__ == "__main__":
     main()
